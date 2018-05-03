@@ -1,5 +1,6 @@
-class TimeSet[E] {
-  private val elements = collection.mutable.HashMap[E, Long]()
+import collection.mutable
+
+class TimeSet[E] private (elements: mutable.HashMap[E, Long] = new mutable.HashMap[E, Long]()) {
 
   def add(elem: E, timestamp: Long): Long = {
     if (!elements.contains(elem) || (elements.contains(elem) && elements(elem) < timestamp)) {
@@ -18,4 +19,15 @@ class TimeSet[E] {
   def apply(elem: E): Long = elements(elem)
 
   def exists(elem: E): Boolean = elements.contains(elem)
+}
+
+object TimeSet {
+  def apply[E]: TimeSet[E] = new TimeSet[E]()
+  def apply[E](elements: (E, Long)*): TimeSet[E] = {
+    
+    val map = new mutable.HashMap[E, Long]()
+    elements.foreach((map.put _).tupled)
+    
+    new TimeSet[E](map)
+  }
 }
