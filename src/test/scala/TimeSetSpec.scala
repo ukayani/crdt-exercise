@@ -8,7 +8,7 @@ class TimeSetSpec extends FunSpec with MustMatchers {
       val key = "non-existent-key"
       val timestamp = 1L
 
-      ts.add(key, timestamp)
+      ts.add(key, timestamp) mustBe timestamp
 
       ts.get(key).value mustBe timestamp
     }
@@ -20,7 +20,7 @@ class TimeSetSpec extends FunSpec with MustMatchers {
 
       ts.get(key).value mustBe timestamp
 
-      ts.add(key, timestamp + 1)
+      ts.add(key, timestamp + 1) mustBe (timestamp + 1)
       ts.get(key).value mustBe (timestamp + 1)
     }
 
@@ -29,7 +29,7 @@ class TimeSetSpec extends FunSpec with MustMatchers {
       val timestamp = 1L
       val ts = TimeSet[String](key -> timestamp)
 
-      ts.add(key, timestamp - 1)
+      ts.add(key, timestamp - 1) mustBe timestamp
 
       ts.get(key).value mustBe timestamp
 
