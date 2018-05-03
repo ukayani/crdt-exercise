@@ -37,5 +37,23 @@ class TimeSetSpec extends FunSpec with MustMatchers {
       ts.get(key).value mustBe timestamp
       
     }
+    
+  }
+  
+  describe(".exists") {
+    it("must return true if an element with specified key exists in the set") {
+      val ts = new TimeSet[String]()
+      val key = "mykey"
+      
+      ts.add(key, 1)
+      
+      ts.exists(key) mustBe true
+    }
+    
+    it("must return false if an element with specified key does not exist in the set") {
+      val ts = new TimeSet[String]()
+      
+      ts.exists("non-existent-key") mustBe false
+    }
   }
 }
