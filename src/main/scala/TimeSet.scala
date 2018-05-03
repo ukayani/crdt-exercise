@@ -3,11 +3,14 @@ import collection.mutable
 class TimeSet[E] private (elements: mutable.HashMap[E, Long] = new mutable.HashMap[E, Long]()) {
 
   def add(elem: E, timestamp: Long): Long = {
-    if (!elements.contains(elem) || (elements.contains(elem) && elements(elem) < timestamp)) {
-      elements.put(elem, timestamp)
-      timestamp
-    } else {
-      elements(elem)
+    // The existence check + put operation need to be done atomically to make this method thread safe
+    this.synchronized {
+      if (!elements.contains(elem) || (elements.contains(elem) && elements(elem) < timestamp)) {
+        elements.put(elem, timestamp)
+        timestamp
+      } else {
+        elements(elem)
+      }  
     }
   }
 
