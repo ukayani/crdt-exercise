@@ -34,6 +34,25 @@ class LWWSet[E] {
     */
   def remove(elem: E, timestamp: Long): Long = removeSet.add(elem, timestamp)
 
+  /**
+    * Returns true if element exists in the set and false otherwise.
+    * An element exists in the set if the most recent operation was an add
+    *
+    * Note: If an element was added and removed with the same timestamp, it is not considered a member of the set
+    * @param elem - Element to check existence of
+    * @return
+    */
+  def exists(elem: E): Boolean =
+    if (addSet.exists(elem)) {
+      !removeSet.exists(elem) || addSet(elem) > removeSet(elem)
+    } else false
+
+  /**
+    * Returns all elements which are members of the set.
+    * An element is a member of the set if exists(elem) == true
+    * @return
+    */
+  def get(): Seq[E] = addSet.all().filter(exists).toSeq
 }
 
 object LWWSet {
