@@ -1,21 +1,31 @@
 package crdt
 
-import crdt.impl.InMemLWWSet
+import com.redis.RedisClient
+import crdt.impl.{ RedisLWWSet }
 import org.scalatest._
 
-class LWWSetSpec extends FunSpec with MustMatchers {
+class LWWSetSpec extends FunSpec with MustMatchers with BeforeAndAfterEach with BeforeAndAfterAll {
 
-  def createLWWSet[E]: LWWSet[E] = InMemLWWSet[E]
+  val client = new RedisClient("localhost", 6379)
+
+  override def afterEach =
+    // clear stored data before next test runs for test isolation
+    client.flushdb
+
+  override def afterAll =
+    client.disconnect
+
+  def createLWWSet: LWWSet[String] = new RedisLWWSet[String](client, "testset")
 
   describe(".add") {
     it("must return specified timestamp if element does not exist") {
-      val lww = createLWWSet[String]
+      val lww = createLWWSet
 
       lww.add("test", 5) mustBe 5
     }
 
     it("must return newest timestamp if element already exist") {
-      val lww = createLWWSet[String]
+      val lww = createLWWSet
 
       lww.add("test", 5) mustBe 5
       lww.add("test", 4) mustBe 5
@@ -25,13 +35,13 @@ class LWWSetSpec extends FunSpec with MustMatchers {
 
   describe(".remove") {
     it("must return specified timestamp if element does not exist") {
-      val lww = createLWWSet[String]
+      val lww = createLWWSet
 
       lww.remove("test", 5) mustBe 5
     }
 
     it("must return newest timestamp if element already exist") {
-      val lww = createLWWSet[String]
+      val lww = createLWWSet
 
       lww.remove("test", 5) mustBe 5
       lww.remove("test", 4) mustBe 5
@@ -41,14 +51,14 @@ class LWWSetSpec extends FunSpec with MustMatchers {
 
   describe(".exists") {
     it("must return true for an element that was added but never removed") {
-      val lww = createLWWSet[String]
+      val lww = createLWWSet
 
       lww.add("test", 1)
 
       lww.exists("test") mustBe true
     }
     it("must return false for an element that was added and subsequently removed with a newer timestamp") {
-      val lww = createLWWSet[String]
+      val lww = createLWWSet
 
       lww.add("test", 1)
       lww.remove("test", 2)
@@ -58,7 +68,7 @@ class LWWSetSpec extends FunSpec with MustMatchers {
     it(
       "must return true for an element that was added, removed, and then added again with monotonically increasing timestamps"
     ) {
-      val lww = createLWWSet[String]
+      val lww = createLWWSet
 
       lww.add("test", 1)
       lww.remove("test", 2)
@@ -68,7 +78,7 @@ class LWWSetSpec extends FunSpec with MustMatchers {
     }
 
     it("must return true for an element that was added and then removed with an older timestamp") {
-      val lww = createLWWSet[String]
+      val lww = createLWWSet
 
       lww.add("test", 2)
       lww.remove("test", 1)
@@ -77,17 +87,17 @@ class LWWSetSpec extends FunSpec with MustMatchers {
     }
 
     it("must return false for an element that was never added") {
-      val lww = createLWWSet[String]
+      val lww = createLWWSet
       lww.exists("test") mustBe false
     }
     it("must return false for an element that was only ever removed, never added") {
-      val lww = createLWWSet[String]
+      val lww = createLWWSet
 
       lww.remove("test", 1)
       lww.exists("test") mustBe false
     }
     it("must return false for an element that was added and removed with identical timestamp values") {
-      val lww = createLWWSet[String]
+      val lww = createLWWSet
       lww.add("test", 1)
       lww.remove("test", 1)
 
@@ -101,12 +111,12 @@ class LWWSetSpec extends FunSpec with MustMatchers {
 
   describe(".get") {
     it("must return an empty list if no elements are added") {
-      val lww = createLWWSet[String]
+      val lww = createLWWSet
       lww.get() mustBe Seq.empty[String]
     }
 
     it("must return a list containing all elements which were added but not removed") {
-      val lww = createLWWSet[String]
+      val lww = createLWWSet
       lww.add("test", 1)
       lww.add("hello", 1)
       lww.add("world", 1)
@@ -114,7 +124,7 @@ class LWWSetSpec extends FunSpec with MustMatchers {
     }
 
     it("must not return the same element more than once") {
-      val lww = createLWWSet[String]
+      val lww = createLWWSet
 
       lww.add("test", 1)
       lww.add("test", 2)
@@ -123,7 +133,7 @@ class LWWSetSpec extends FunSpec with MustMatchers {
     }
 
     it("must not return elements which are removed with a later timestamp than they were added") {
-      val lww = createLWWSet[String]
+      val lww = createLWWSet
 
       lww.add("test", 1)
       lww.remove("test", 2)
