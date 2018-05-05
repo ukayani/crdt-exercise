@@ -16,12 +16,18 @@ import crdt.{ LWWSet, TimeSet }
 class InMemLWWSet[E] extends LWWSet[E] {
 
   /**
-    * Returns a newly initialized TimeSet instance
+    * Returns a newly initialized TimeSet instance for the add set
     *
-    * @tparam E
     * @return
     */
-  override protected def createTimeSet[E]: TimeSet[E] = InMemTimeSet[E]
+  override protected def createAddTimeSet: TimeSet[E] = InMemTimeSet[E]
+
+  /**
+    * Returns a newly initialized TimeSet instance for the add set
+    *
+    * @return
+    */
+  override protected def createRemoveTimeSet: TimeSet[E] = InMemTimeSet[E]
 }
 
 object InMemLWWSet {

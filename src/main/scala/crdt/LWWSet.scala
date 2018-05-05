@@ -13,15 +13,22 @@ package crdt
   */
 trait LWWSet[E] {
 
-  private val addSet: TimeSet[E] = createTimeSet
-  private val removeSet: TimeSet[E] = createTimeSet
+  private val addSet: TimeSet[E] = createAddTimeSet
+  private val removeSet: TimeSet[E] = createRemoveTimeSet
 
   /**
-    * Returns a newly initialized TimeSet instance
-    * @tparam E
+    * Returns a newly initialized TimeSet instance for the add set
+    *
     * @return
     */
-  protected def createTimeSet[E]: TimeSet[E]
+  protected def createAddTimeSet: TimeSet[E]
+
+  /**
+    * Returns a newly initialized TimeSet instance for the add set
+    *
+    * @return
+    */
+  protected def createRemoveTimeSet: TimeSet[E]
 
   /**
     * Adds an element to the set if the element does not exist or it exists with an older timestamp
