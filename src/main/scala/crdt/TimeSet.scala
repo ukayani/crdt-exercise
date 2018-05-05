@@ -1,4 +1,4 @@
-import collection.mutable
+package crdt
 
 /**
   * A set structure which accepts elements of type E with an associated timestamp value (Long)
@@ -6,10 +6,9 @@ import collection.mutable
   * This set's add operation will replace existing elements only if the timestamp is newer than what is currently
   * in the set.
   *
-  * @param elements initialize set with an existing hashmap
   * @tparam E
   */
-class TimeSet[E] private (elements: mutable.HashMap[E, Long] = new mutable.HashMap[E, Long]()) {
+trait TimeSet[E] {
 
   /**
     * Adds element to set if it doesn't exist. If element already exists, the element will be updated only if
@@ -19,52 +18,32 @@ class TimeSet[E] private (elements: mutable.HashMap[E, Long] = new mutable.HashM
     * @param timestamp - A long value representing a time value, bigger means newer
     * @return The newest timestamp between the element being added and the element which exists (if it exists)
     */
-  def add(elem: E, timestamp: Long): Long =
-    // The existence check + put operation need to be done atomically to make this method thread safe
-    this.synchronized {
-      if (!elements.contains(elem) || (elements.contains(elem) && elements(elem) < timestamp)) {
-        elements.put(elem, timestamp)
-        timestamp
-      } else {
-        elements(elem)
-      }
-    }
+  def add(elem: E, timestamp: Long): Long
 
   /**
     * Returns the timestamp of the element if it exists, otherwise returns None.
     * @param elem
     * @return
     */
-  def get(elem: E): Option[Long] = elements.get(elem)
+  def get(elem: E): Option[Long]
 
   /**
     * Returns all elements as a regular set
     * @return
     */
-  def all(): Set[E] = elements.keySet.toSet
+  def all(): Set[E]
 
   /**
     * Returns the timestamp of the element if it exists, otherwise throws an exception.
     * @param elem
     * @return
     */
-  def apply(elem: E): Long = elements(elem)
+  def apply(elem: E): Long
 
   /**
     * Returns true if element exits, false otherwise.
     * @param elem
     * @return
     */
-  def exists(elem: E): Boolean = elements.contains(elem)
-}
-
-object TimeSet {
-  def apply[E]: TimeSet[E] = new TimeSet[E]()
-  def apply[E](elements: (E, Long)*): TimeSet[E] = {
-
-    val map = new mutable.HashMap[E, Long]()
-    elements.foreach((map.put _).tupled)
-
-    new TimeSet[E](map)
-  }
+  def exists(elem: E): Boolean
 }

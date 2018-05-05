@@ -1,3 +1,5 @@
+package crdt
+
 /**
   * Last Write Wins Element Set
   *
@@ -9,9 +11,17 @@
   *
   * @tparam E
   */
-class LWWSet[E] {
-  private val addSet = TimeSet[E]
-  private val removeSet = TimeSet[E]
+trait LWWSet[E] {
+
+  private val addSet: TimeSet[E] = createTimeSet
+  private val removeSet: TimeSet[E] = createTimeSet
+
+  /**
+    * Returns a newly initialized TimeSet instance
+    * @tparam E
+    * @return
+    */
+  protected def createTimeSet[E]: TimeSet[E]
 
   /**
     * Adds an element to the set if the element does not exist or it exists with an older timestamp
@@ -53,8 +63,4 @@ class LWWSet[E] {
     * @return
     */
   def get(): Seq[E] = addSet.all().filter(exists).toSeq
-}
-
-object LWWSet {
-  def apply[E]: LWWSet[E] = new LWWSet[E]()
 }
