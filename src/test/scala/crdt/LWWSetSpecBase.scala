@@ -1,21 +1,10 @@
 package crdt
 
-import com.redis.RedisClient
-import crdt.impl.{ RedisLWWSet }
 import org.scalatest._
 
-class LWWSetSpec extends FunSpec with MustMatchers with BeforeAndAfterEach with BeforeAndAfterAll {
+trait LWWSetSpecBase extends FunSpec with MustMatchers {
 
-  val client = new RedisClient("localhost", 6379)
-
-  override def afterEach =
-    // clear stored data before next test runs for test isolation
-    client.flushdb
-
-  override def afterAll =
-    client.disconnect
-
-  def createLWWSet: LWWSet[String] = new RedisLWWSet[String](client, "testset")
+  def createLWWSet: LWWSet[String]
 
   describe(".add") {
     it("must return specified timestamp if element does not exist") {

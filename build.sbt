@@ -20,3 +20,5 @@ libraryDependencies ++= Seq("net.debasishg" %% "redisclient" % "3.6", "org.scala
 scalafmtOnCompile in ThisBuild := true // all projects
 scalafmtOnCompile := true // current project
 scalafmtOnCompile in Compile := true // current project, specific configuration
+
+parallelExecution in Test := false
