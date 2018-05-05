@@ -23,7 +23,7 @@ class InMemTimeSet[E] private (elements: mutable.HashMap[E, Long] = new mutable.
   def add(elem: E, timestamp: Long): Long =
     // The existence check + put operation need to be done atomically to make this method thread safe
     this.synchronized {
-      if (!elements.contains(elem) || (elements.contains(elem) && elements(elem) < timestamp)) {
+      if (!elements.contains(elem) || elements(elem) < timestamp) {
         elements.put(elem, timestamp)
         timestamp
       } else {
