@@ -15,7 +15,7 @@ scalacOptions ++= Seq(
   "-Ywarn-unused:privates" // Warn if a private member is unused.
 )
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test"
+libraryDependencies ++= Seq("net.debasishg" %% "redisclient" % "3.6", "org.scalatest" %% "scalatest" % "3.0.5" % "test")
 
 scalafmtOnCompile in ThisBuild := true // all projects
 scalafmtOnCompile := true // current project
