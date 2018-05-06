@@ -102,7 +102,7 @@ For example in a Future based implementation we could return a failed Future.
 Another assumption made is for serialization/deserialization errors. Currently it is assumed that
 these operations do not fail and if they do, they must throw exceptions.
 
-## Flexibility for timestamp type
+### Flexibility for timestamp type
 
 Currently the timestamp type is fixed to Long. We could easily make this parameterizable and 
 include a Marshaller for this type to Long.
