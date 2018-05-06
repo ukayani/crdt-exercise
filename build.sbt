@@ -1,3 +1,5 @@
+import scala.sys.process.Process
+
 name := "crdt-exercise"
 
 version := "0.1"
@@ -22,3 +24,10 @@ scalafmtOnCompile := true // current project
 scalafmtOnCompile in Compile := true // current project, specific configuration
 
 parallelExecution in Test := false
+
+testOptions in Test += Tests.Setup { () =>
+  Process(s"docker-compose up -d").!
+}
+testOptions in Test += Tests.Cleanup { () =>
+  Process(s"docker-compose down").!
+}
